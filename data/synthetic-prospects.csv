@@ -1,0 +1,16 @@
+﻿company_name,city,industry,facility_type,buyer_role,company_size_category,purchase_stage,employees,annual_revenue_mil,facility_sqft,electrical_load_kw,capex_electrical_k,distance_from_logan_km
+Cache Valley Cheese Co,Logan,Food Processing,Plant,Maintenance Manager,Large,Evaluating Vendors,420,180,120000,5200,640,3
+Bear River Milling,Smithfield,Agriculture,Processing Facility,Plant Manager,Medium,Budget Approved,95,45,45000,2100,210,12
+Wasatch Panel Systems,North Logan,Manufacturing,Plant,Electrical Engineer,Medium,Evaluating Vendors,110,60,65000,2800,330,5
+Logan Cold Storage,Logan,Warehousing,Distribution Center,Facilities Director,Medium,Awareness,75,30,70000,1900,160,2
+Hyrum Metal Works,Hyrum,Manufacturing,Plant,Plant Manager,Medium,Evaluating Vendors,140,72,85000,3400,420,10
+Cache Construction Supply,Providence,Construction,Warehouse,Facilities Director,Small,Awareness,35,12,25000,900,90,4
+North Valley Plastics,Hyde Park,Manufacturing,Plant,Maintenance Manager,Medium,Budget Approved,120,58,78000,3000,360,7
+Mountain West Dairy,Logan,Food Processing,Processing Facility,Plant Manager,Large,Evaluating Vendors,380,150,110000,4700,520,3
+Cache Valley Logistics,North Logan,Warehousing,Distribution Center,Facilities Director,Medium,Awareness,80,28,68000,1700,140,6
+Bear River Equipment,Smithfield,Agriculture,Warehouse,Electrical Engineer,Small,Awareness,28,10,20000,750,75,13
+Logan Industrial Coatings,Logan,Manufacturing,Plant,Maintenance Manager,Medium,Evaluating Vendors,90,40,54000,2300,240,2
+Providence Steel Fab,Providence,Manufacturing,Plant,Plant Manager,Medium,Budget Approved,130,70,76000,3100,370,4
+Cache Valley Water Systems,Logan,Utilities,Facility,Electrical Engineer,Small,Evaluating Vendors,45,18,15000,1600,180,3
+Northern Utah Food Labs,North Logan,Food Processing,Plant,Facilities Director,Small,Awareness,40,15,20000,1100,110,5
+Summit Packaging,Hyde Park,Manufacturing,Plant,Maintenance Manager,Medium,Evaluating Vendors,105,48,60000,2600,300,8

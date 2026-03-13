@@ -18,7 +18,15 @@ execute:
 jupyter: python3
 ---
 
-<!-- - ProSales Tools Introduction
+- Research for go-to market and new market development.
+- Four-person teams, two-year plan for ROI.
+- Electrical hardware distributor, B2B sales.
+- Residential planning to expand into a second market: industrial or commercial.
+
+
+
+
+- ProSales Tools Introduction
     - “Prioritize probability” suggests a lead-scoring model.
     - “Prepare Custom Angles” suggests segmentation (Ideal Customer Profile).
     - BI: Earnings calls, website, competitor analysis, job posting, tech stack.
@@ -26,10 +34,6 @@ jupyter: python3
     - Apollo.io prospecting tool, industrial or commercial (residential?)
         - Companies > Prospect Filters and Specific Keywords
         - What data can you get on company prospects?
-- Research for go-to market consulting competition.
-- Four-person teams, two-year plan for ROI.
-- Electrical hardware distributor, B2B sales.
-- Residential planning to expand to other markets. -->
 
 
 
