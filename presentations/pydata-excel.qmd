@@ -1,0 +1,496 @@
+---
+title: "Data Analysis with Excel"
+subtitle: "ProSales + CED Sales Consulting Case Competition"
+author: "Marc Dotson"
+title-slide-attributes:
+  data-background-color: "#0F2439"
+format: 
+  revealjs:
+    theme: slides.scss     # Modified slides theme
+    code-copy: true        # Show code blocks copy button
+    slide-number: c/t      # Numbered slides current/total
+    embed-resources: true  # Render to a single HTML file
+    footer: "[github.com/marcdotson/pydata-excel](https://github.com/marcdotson/pydata-excel)"
+execute:
+  eval: false
+  echo: true
+  cache: false
+jupyter: python3
+---
+
+<!-- - ProSales Tools Introduction
+    - “Prioritize probability” suggests a lead-scoring model.
+    - “Prepare Custom Angles” suggests segmentation (Ideal Customer Profile).
+    - BI: Earnings calls, website, competitor analysis, job posting, tech stack.
+    - Using public data (or bankrupt private data) as a proxy for private data.
+    - Apollo.io prospecting tool, industrial or commercial (residential?)
+        - Companies > Prospect Filters and Specific Keywords
+        - What data can you get on company prospects?
+- Research for go-to market consulting competition.
+- Four-person teams, two-year plan for ROI.
+- Electrical hardware distributor, B2B sales.
+- Residential planning to expand to other markets. -->
+
+
+
+
+
+## 
+
+:::: {.columns .v-center}
+
+::: {.column width="40%"}
+![](../figures/polars.png){fig-align="center"}
+:::
+
+::: {.column width="60%"}
+::: {.incremental}
+- Newer open source library for data wrangling
+- Alternative to Pandas for manipulating DataFrames
+- **Fast** -- written in Rust, uses Apache Arrow, built to parallelize and use GPUs, allows for lazy evaluation
+- More consistent, **human-readable syntax** than Pandas
+- Anagram of its query engine (OLAP) and Rust (rs)
+:::
+:::
+
+::::
+
+## Load Packages and Data
+
+After installing with `uv add polars` or `pip install polars`, we can import Polars and read in data.
+
+::: {.panel-tabset .scrollable}
+## Polars
+
+```{python}
+import os
+import polars as pl
+
+customer_data = pl.read_csv(os.path.join('data', 'customer_data.csv'))
+customer_data
+```
+
+## Pandas
+
+```{python}
+import os
+import pandas as pd
+
+customer_data_pd = pd.read_csv(os.path.join('data', 'customer_data.csv'))
+customer_data_pd
+```
+
+## R
+
+```{r}
+library(tidyverse)
+
+customer_data <- read_csv(here::here("data", "customer_data.csv"))
+customer_data
+```
+:::
+
+## Filter Observations
+
+Polars **DataFrames** have methods that mirror SQL. DataFrames are still composed of columns called **Series**, however, unlike Pandas DataFrames, Polars DataFrames don't have a **row index** (so no need to `.reset_index()`).
+
+Additionally, instead of relying on Pandas' `.loc[]` **property**, Polars includes function-like **expressions** like `pl.col('column_name')`.
+
+::: {.panel-tabset .scrollable}
+## Polars
+
+```{python}
+customer_data.filter(pl.col('college_degree') == 'Yes')
+customer_data.filter(pl.col('region') != 'West')
+customer_data.filter(pl.col('gender') != 'Female', pl.col('income') > 70000)
+```
+
+## Pandas
+
+```{python}
+customer_data_pd.loc[customer_data_pd['college_degree'] == 'Yes']
+customer_data_pd.loc[customer_data_pd['region'] != 'West']
+customer_data_pd.loc[(customer_data_pd['gender'] != 'Female') & (customer_data_pd['income'] > 70000)]
+```
+
+## R
+
+```{r}
+filter(customer_data, college_degree == "Yes")
+filter(customer_data, region != "West")
+filter(customer_data, gender == "Female", income > 70000)
+```
+:::
+
+## Slice Observations
+
+The parameters for Polars' `.slice()` method are the start index and the length.
+
+We similarly don't need to rely on Pandas' `.iloc[]` property.
+
+::: {.panel-tabset .scrollable}
+## Polars
+
+```{python}
+customer_data.slice(0, 5)
+```
+
+## Pandas
+
+```{python}
+customer_data_pd.iloc[0:5]
+```
+
+## R
+
+```{r}
+slice(customer_data, 1:5)
+```
+:::
+
+## Sort Observations
+
+To reiterate, instead of using `[ ]` like in Pandas, in Polars we rely on expressions like `pl.col()`.
+
+::: {.panel-tabset .scrollable}
+## Polars
+
+```{python}
+customer_data.sort(pl.col('birth_year'))
+customer_data.sort(pl.col('birth_year'), descending = True)
+```
+
+## Pandas
+
+```{python}
+customer_data_pd.sort_values('birth_year')
+customer_data_pd.sort_values('birth_year', ascending = False)
+```
+
+## R
+
+```{r}
+arrange(customer_data, birth_year)
+arrange(customer_data, desc(birth_year))
+```
+:::
+
+## Select Variables
+
+Polars separates out `.filter()` and `.select()` that are combined in Pandas' `.loc[]`.
+
+::: {.panel-tabset .scrollable}
+## Polars
+
+```{python}
+customer_data.select(pl.col('region'), pl.col('review_text'))
+customer_data.select(pl.col(['region', 'review_text']))
+```
+
+## Pandas
+
+```{python}
+customer_data_pd.loc[:, ['region', 'review_text']]
+```
+
+## R
+
+```{r}
+select(customer_data, region, review_text)
+```
+:::
+
+## Add Variables
+
+Polars is actually a query language, like SQL. So it's not surprising to see methods with names that more closely mirror queries, like the `.with_columns()` method.
+
+::: {.panel-tabset .scrollable}
+## Polars
+
+```{python}
+customer_data.with_columns(income_new = pl.col('income') / 1000)
+```
+
+## Pandas
+
+```{python}
+customer_data_pd.assign(income_new = customer_data_pd['income'] / 1000)
+```
+
+## R
+
+```{r}
+mutate(customer_data, income = income / 1000)
+```
+:::
+
+## Join Data Frames
+
+Joins are straightforward.
+
+::: {.panel-tabset .scrollable}
+## Polars
+
+```{python}
+store_transactions = pl.read_csv(os.path.join('data', 'store_transactions.csv'))
+store_transactions
+
+customer_data.join(store_transactions, on = 'customer_id', how = 'left')
+```
+
+## Pandas
+
+```{python}
+store_transactions_pd = pd.read_csv(os.path.join('data', 'store_transactions.csv'))
+store_transactions_pd
+
+customer_data_pd.set_index('customer_id').join(store_transactions_pd.set_index('customer_id'))
+```
+
+## R
+
+```{r}
+store_transactions <- read_csv(here::here("data", "store_transactions.csv"))
+store_transactions
+
+left_join(customer_data, store_transactions, join_by(customer_id))
+```
+:::
+
+## Consecutive Lines of Code
+
+While possible with Python code generally, Polars especially embraces writing consecutive lines of code using **method chaining**. Note that:
+
+- The entire chain needs to be surrounded with `( )`
+- Each line *starts* with `.`
+- You run the whole block of code at once
+- You can read it like a sentence
+
+::: {.panel-tabset .scrollable}
+## Polars
+
+```{python}
+(customer_data
+  .join(store_transactions, on='customer_id', how='left')
+  .filter(pl.col('region') == 'West', pl.col('feb_2005') == pl.col('feb_2005').max())
+  .with_columns(age = 2024 - pl.col('birth_year'))
+  .select(pl.col(['age', 'feb_2005']))
+  .sort(pl.col('age'), descending=True)
+  .slice(0, 1)
+)
+```
+
+## Pandas
+
+```{python}
+crm_data_pd = (customer_data_pd
+  .set_index('customer_id')
+  .join(store_transactions_pd.set_index('customer_id'))
+)
+
+(crm_data_pd
+  .loc[(crm_data_pd['region'] == 'West') & (crm_data_pd['feb_2005'] == crm_data_pd['feb_2005'].max())]
+  .assign(age = 2024 - crm_data_pd['birth_year'])
+  .loc[:, ['age', 'feb_2005']]
+  .sort_values('age', ascending = False)
+  .iloc[0:1]
+)
+```
+
+## R
+
+```{r}
+customer_data |> 
+  left_join(store_transactions, join_by(customer_id)) |> 
+  filter(region == "West", feb_2005 == max(feb_2005)) |> 
+  mutate(age = 2024 - birth_year) |> 
+  select(age, feb_2005) |> 
+  arrange(desc(age)) |> 
+  slice(1)
+```
+:::
+
+## Summarize Discrete Data
+
+::: {.panel-tabset .scrollable}
+## Polars
+
+```{python}
+(customer_data
+  .group_by(pl.col('region'))
+  .agg(n = pl.len())
+)
+
+(customer_data
+  .group_by(pl.col(['region', 'college_degree']))
+  .agg(n = pl.len())
+)
+```
+
+## Pandas
+
+```{python}
+(customer_data_pd
+  .value_counts('region')
+)
+
+(customer_data_pd
+  .value_counts(['region', 'college_degree'])
+)
+```
+
+## R
+
+```{r}
+customer_data |> 
+  count(region)
+
+customer_data |> 
+  count(region, college_degree)
+```
+:::
+
+## Summarize Continuous Data
+
+::: {.panel-tabset .scrollable}
+## Polars
+
+```{python}
+(customer_data
+  .select(pl.col('income'))
+  .mean()
+)
+
+(customer_data
+  .select(pl.col(['income', 'credit']))
+  .mean()
+)
+```
+
+## Pandas
+
+```{python}
+(customer_data_pd
+  .loc[:, ['income']]
+  .mean()
+)
+
+(customer_data_pd
+  .loc[:, ['income', 'credit']]
+  .mean()
+)
+```
+
+## R
+
+```{r}
+customer_data |>
+  summarize(avg_income = mean(income))
+
+customer_data |>
+  summarize(
+    avg_income = mean(income),
+    avg_credit = mean(credit)
+  )
+```
+:::
+
+## Summarize Discrete and Continuous Data
+
+::: {.panel-tabset .scrollable}
+## Polars
+
+```{python}
+(customer_data
+  .group_by(pl.col(['gender', 'region']))
+  .agg(
+    avg_income = pl.col('income').mean(), 
+    avg_credit = pl.col('credit').mean()
+  )
+  .sort(pl.col('avg_income'), descending = True)
+)
+```
+
+## Pandas
+
+```{python}
+(customer_data_pd
+ .groupby(['gender', 'region'])
+ .agg(
+   avg_income = ('income', 'mean'), 
+   avg_credit = ('credit', 'mean')
+  )
+ .sort_values('avg_income', ascending = False)
+)
+```
+
+## R
+
+```{r}
+customer_data |>
+  group_by(gender, region) |>
+  summarize(
+    avg_income = mean(income),
+    avg_credit = mean(credit)
+  ) |> 
+  arrange(desc(avg_income))
+```
+:::
+
+## Lazy Evaluation
+
+Tag a data frame with `.lazy()` to have Polars optimize the query
+
+- Code is only run when we use `.collect()`
+- Look at the underlying optimized OLAP query using `.explain()`
+
+```{python}
+df = (customer_data
+  .group_by(pl.col(['gender', 'region']))
+  .agg(
+    avg_income = pl.col('income').mean(), 
+    avg_credit = pl.col('credit').mean()
+  )
+  .sort(pl.col('avg_income'), descending = True)
+).lazy()
+
+df.collect()
+
+df.explain()
+```
+
+## Resources
+
+- [Lazy API](https://docs.pola.rs/user-guide/concepts/lazy-api/)
+- [Modern Polars](https://kevinheavey.github.io/modern-polars/)
+- [Polars for Data Analysis in Python](https://www.youtube.com/watch?v=5V_MvnwTVwc)
+- [Understanding Expressions when you're used to pandas](https://www.youtube.com/watch?v=kPtUPe5Egak)
+- [Polars’ Rgonomic Patterns](https://emilyriederer.netlify.app/post/py-rgo-polars/)
+
+# Thank you! {background-color="#288DC2"}
+
+[marc.dotson@usu.edu](mailto:marc.dotson@usu.edu)  
+[github.com/marcdotson](https://github.com/marcdotson)  
+[occasionaldivergences.com](https://occasionaldivergences.com)
+
+## 
+
+:::: {.columns .v-center}
+
+::: {.column width="40%"}
+![](../figures/pydata.png){fig-align="center" width="80%"}
+:::
+
+::: {.column width="60%"}
+::: {.incremental}
+- Club and professional forum to learn/retool
+- Global network of chapters
+- Workshops vary from beginning to advanced
+- Polyglot (Python, Julia, R, etc.)
+- We follow the [PyData Code of Conduct](https://pydata.org/code-of-conduct/)
+- Join at [meetup.com/pydata-northern-utah](https://www.meetup.com/pydata-northern-utah/)
+:::
+:::
+
+::::
+
