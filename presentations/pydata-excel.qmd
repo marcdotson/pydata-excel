@@ -1,5 +1,5 @@
 ---
-title: "Data Analysis with Excel"
+title: "Data Analytics with Excel"
 subtitle: "ProSales + CED Sales Consulting Case Competition"
 author: "Marc Dotson"
 title-slide-attributes:
@@ -18,11 +18,9 @@ execute:
 jupyter: python3
 ---
 
-# Data Analysis {background-color="#288DC2"}
-
 ## Using data to inform decision-making
 
-**Data analysis** is the process of using data to inform business decision-making under uncertainty
+**Data analytics** is the process of using data to **inform** business decision-making under uncertainty
 
 ::: {.incremental}
 1. Start with a clear business objective
@@ -31,20 +29,20 @@ jupyter: python3
 :::
 
 ::: {.fragment}
-Good business decision-making is **informed** by data
+Most data analyses have two components: **visualizing data** and **modeling data**
 :::
 
-## Case details
+<!-- ## Case details
 
 - Research for go-to market and new market development
 - Electrical hardware distributor, B2B sales
-- Residential planning to expand into a second market: industrial or commercial
+- Residential planning to expand into a second market: industrial or commercial -->
 
 # Visualizing Data {background-color="#288DC2"}
 
 ## Understanding the data and its limitations
 
-Understand the data you have so you can communicate about it and address its limitations
+You need to understand the data you have so you can communicate about it and address its limitations
 
 ::: {.incremental}
 - Visualize data and relationships
@@ -65,22 +63,24 @@ Keep your data organized into **rows** (observations) and **columns** (variables
 ::: {.fragment .column width="50%"}
 **Discrete**
 
-"Individually separate and distinct" (i.e., **categorical** or qualitative)
+"Individually separate and distinct" (**categorical** or qualitative)
 
 ::: {.incremental}
 - Counts and proportions
 - Bar/column plots
+- Boxplots
 :::
 :::
 
 ::: {.fragment .column width="50%"}
 **Continuous**
 
-"Forming an unbroken whole; without interruption" (i.e., **numeric** or quantitative)
+"Forming an unbroken whole; without interruption" (**numeric** or quantitative)
 
 ::: {.incremental}
 - Histograms
 - Line plots
+- Boxplots
 - Scatterplots
 :::
 :::
@@ -99,7 +99,7 @@ The grammar of graphics is a philosophy created by Leland Wilkinson about **comp
 :::
 
 ::: {.fragment}
-You should be creative, but remember this is about communicating a clear story: A visualization is effective only if it is easy to understand and **self-contained**
+You should be creative, but remember this is about communicating a clear story: A visualization is effective only if it is **easy to understand** and **self-contained**
 :::
 
 ## Counts and bar/column plots
@@ -109,7 +109,7 @@ You should be creative, but remember this is about communicating a clear story: 
 :::
 
 ::: {.column width="50%"}
-- Visualize discrete variables
+- Visualize a discrete variable
 - Remove duplicates
 - Use `COUNTIF()` to create counts
 - Insert a bar/column plot
@@ -122,7 +122,7 @@ You should be creative, but remember this is about communicating a clear story: 
 :::
 
 ::: {.column width="50%"}
-- Visualize continuous variables
+- Visualize the distribution of a continuous variable
 - Insert a histogram
 - Modify "Format Data Series"
 :::
@@ -151,6 +151,17 @@ You should be creative, but remember this is about communicating a clear story: 
 - Insert a clustered bar/column plot
 :::
 
+## Boxplots
+
+::: {.column width="50%"}
+![](../figures/plot_boxplot.png)
+:::
+
+::: {.column width="50%"}
+- Visualize the distribution of a continuous variable by a discrete variable
+- Insert a box plot
+:::
+
 ## Scatterplots
 
 ::: {.column width="50%"}
@@ -163,52 +174,41 @@ You should be creative, but remember this is about communicating a clear story: 
 - Add a trendline
 :::
 
-## Boxplots
-
-::: {.column width="50%"}
-![](../figures/plot_boxplot.png)
-:::
-
-::: {.column width="50%"}
-- Visualize the relationship between discrete and continuous variables
-- Insert a box plot
-:::
-
 # Work on visualizing data for the case competition. What patterns do you uncover? What do they suggest? {background-color="#006242"}
 
 # Modeling Data {background-color="#288DC2"}
 
 ## Extracting information from data
 
-We use models to **extract information** from data
+Visualizations are suggestive, but we often need to use models to **extract information** from data
 
 ## Extracting information from data {visibility="uncounted"}
 
-We use models to **extract information** from data
+Visualizations are suggestive, but we often need to use models to **extract information** from data
 
 ![](../figures/models_predictive.png){fig-align="center"}
 
 ## Extracting information from data {visibility="uncounted"}
 
-We use models to **extract information** from data
+Visualizations are suggestive, but we often need to use models to **extract information** from data
 
 ![](../figures/models_interpretable.png){fig-align="center"}
 
 ## Extracting information from data {visibility="uncounted"}
 
-We use models to **extract information** from data
+Visualizations are suggestive, but we often need to use models to **extract information** from data
 
 ![](../figures/models_causal.png){fig-align="center"}
 
 ## Extracting information from data {visibility="uncounted"}
 
-We use models to **extract information** from data
+Visualizations are suggestive, but we often need to use models to **extract information** from data
 
 ![](../figures/models_all.png){fig-align="center"}
 
 ## Linear regression
 
-One of the most commonly used models is **linear regression**
+One of the most commonly used models is **linear regression**, often referred to as a **key driver analysis**
 
 $$
 \large{y \sim \text{Normal}(\mu, \sigma^2)} \\
@@ -223,7 +223,7 @@ $$
 
 ## Logistic regression
 
-One of the most commonly used classification models is **logistic regression**
+Another commonly used model is **logistic regression**, often used for **lead qualification** or **customer churn prediction**
 
 $$
 \large{y \sim \text{Bernoulli}(p)} \\
@@ -232,11 +232,11 @@ $$
 
 ::: {.incremental}
 - $y$ is a **binary outcome** variable and $x_1 \cdots x_p$ are the **predictor** variables
-- $\beta_0$ is the **intercept**, the log-odds of $y$ when $x_1 \cdots x_p = 0$
+- $\beta_0$ is the **intercept**, the log-odds of $y = 1$ when $x_1 \cdots x_p = 0$
 - $\beta_1$ through $\beta_p$ are the **slopes**, the average change in the log-odds of $y = 1$ for every one unit increase in $x_1$ through $x_p$, respectively, **holding all other predictors constant**
 :::
 
-# Try modeling your data. What do you uncover? What recommendations does it inform? {background-color="#006242"}
+# Try modeling your data. What do you uncover? What sort of recommendations can you make with the results? {background-color="#006242"}
 
 ## 
 
@@ -299,4 +299,6 @@ $$
 ![](../figures/qr-code_marketing-analytics.png){fig-align="center" width="80%"}
 ::::
 ::::::
+
+# Good Luck! {background-color="#288DC2"}
 

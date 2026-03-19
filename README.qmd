@@ -1,5 +1,5 @@
 ---
-title: "Data Analysis with Excel"
+title: "Data Analytics with Excel"
 format: gfm
 ---
 

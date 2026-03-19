@@ -1,4 +1,4 @@
-# Data Analysis with Excel
+# Data Analytics with Excel
 
 
 Essentials for visualizing and modeling data to inform business
