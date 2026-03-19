@@ -1,7 +1,7 @@
 ---
 title: "Data Analysis with Excel"
 subtitle: "ProSales + CED Sales Consulting Case Competition"
-author: "Marc Dotson and Kate Grandia"
+author: "Marc Dotson"
 title-slide-attributes:
   data-background-color: "#0F2439"
 format: 
@@ -31,21 +31,20 @@ jupyter: python3
 :::
 
 ::: {.fragment}
-Good business decision-making is *informed* -- not driven -- by data
+Good business decision-making is **informed** by data
 :::
 
-## CED case details
+## Case details
 
-- Research for go-to market and new market development.
-- Four-person teams, two-year plan for ROI.
-- Electrical hardware distributor, B2B sales.
-- Residential planning to expand into a second market: industrial or commercial.
+- Research for go-to market and new market development
+- Electrical hardware distributor, B2B sales
+- Residential planning to expand into a second market: industrial or commercial
 
 # Visualizing Data {background-color="#288DC2"}
 
 ## Understanding the data and its limitations
 
-Your job as a data analyst to understand the data so you can communicate about the data and address its limitations
+Understand the data you have so you can communicate about it and address its limitations
 
 ::: {.incremental}
 - Visualize data and relationships
@@ -53,6 +52,10 @@ Your job as a data analyst to understand the data so you can communicate about t
 - Check for missing data, outliers, and errors
 - Consider proxy variables
 - Ask questions
+:::
+
+::: {.fragment}
+Keep your data organized into **rows** (observations) and **columns** (variables) with a well-documented **data dictionary**
 :::
 
 ## Variable types and relationships
