@@ -18,6 +18,7 @@ output/*
 private/*
 
 # Files
+*.xlsx
 *.pdf
 code/src/*
 !code/src/*.R
