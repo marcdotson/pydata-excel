@@ -1,7 +1,7 @@
 ---
 title: "Data Analysis with Excel"
 subtitle: "ProSales + CED Sales Consulting Case Competition"
-author: "Marc Dotson"
+author: "Marc Dotson and Kate Grandia"
 title-slide-attributes:
   data-background-color: "#0F2439"
 format: 
@@ -18,483 +18,282 @@ execute:
 jupyter: python3
 ---
 
+# Data Analysis {background-color="#288DC2"}
+
+## Using data to inform decision-making
+
+**Data analysis** is the process of using data to inform business decision-making under uncertainty
+
+::: {.incremental}
+1. Start with a clear business objective
+2. Extract information from relevant data
+3. Make recommendations
+:::
+
+::: {.fragment}
+Good business decision-making is *informed* -- not driven -- by data
+:::
+
+## CED case details
+
 - Research for go-to market and new market development.
 - Four-person teams, two-year plan for ROI.
 - Electrical hardware distributor, B2B sales.
 - Residential planning to expand into a second market: industrial or commercial.
 
+# Visualizing Data {background-color="#288DC2"}
 
+## Understanding the data and its limitations
 
+Your job as a data analyst to understand the data so you can communicate about the data and address its limitations
 
-- ProSales Tools Introduction
-    - “Prioritize probability” suggests a lead-scoring model.
-    - “Prepare Custom Angles” suggests segmentation (Ideal Customer Profile).
-    - BI: Earnings calls, website, competitor analysis, job posting, tech stack.
-    - Using public data (or bankrupt private data) as a proxy for private data.
-    - Apollo.io prospecting tool, industrial or commercial (residential?)
-        - Companies > Prospect Filters and Specific Keywords
-        - What data can you get on company prospects?
-
-
-
-
-
-## 
-
-:::: {.columns .v-center}
-
-::: {.column width="40%"}
-![](../figures/polars.png){fig-align="center"}
+::: {.incremental}
+- Visualize data and relationships
+- Compute numeric summaries
+- Check for missing data, outliers, and errors
+- Consider proxy variables
+- Ask questions
 :::
 
-::: {.column width="60%"}
+## Variable types and relationships
+
+:::: {.columns}
+
+::: {.fragment .column width="50%"}
+**Discrete**
+
+"Individually separate and distinct" (i.e., **categorical** or qualitative)
+
 ::: {.incremental}
-- Newer open source library for data wrangling
-- Alternative to Pandas for manipulating DataFrames
-- **Fast** -- written in Rust, uses Apache Arrow, built to parallelize and use GPUs, allows for lazy evaluation
-- More consistent, **human-readable syntax** than Pandas
-- Anagram of its query engine (OLAP) and Rust (rs)
+- Counts and proportions
+- Bar/column plots
+:::
+:::
+
+::: {.fragment .column width="50%"}
+**Continuous**
+
+"Forming an unbroken whole; without interruption" (i.e., **numeric** or quantitative)
+
+::: {.incremental}
+- Histograms
+- Line plots
+- Scatterplots
 :::
 :::
 
 ::::
 
-## Load Packages and Data
+## Grammar of graphics
 
-After installing with `uv add polars` or `pip install polars`, we can import Polars and read in data.
+The grammar of graphics is a philosophy created by Leland Wilkinson about **composing a visualization** a layer at a time
 
-::: {.panel-tabset .scrollable}
-## Polars
-
-```{python}
-import os
-import polars as pl
-
-customer_data = pl.read_csv(os.path.join('data', 'customer_data.csv'))
-customer_data
-```
-
-## Pandas
-
-```{python}
-import os
-import pandas as pd
-
-customer_data_pd = pd.read_csv(os.path.join('data', 'customer_data.csv'))
-customer_data_pd
-```
-
-## R
-
-```{r}
-library(tidyverse)
-
-customer_data <- read_csv(here::here("data", "customer_data.csv"))
-customer_data
-```
+::: {.incremental}
+1. Data to visualize
+2. Mapping graphical elements to data
+3. A specific graphic representing the data and mappings
+4. Additional fine-tuning via style, labels, scales, etc.
 :::
 
-## Filter Observations
-
-Polars **DataFrames** have methods that mirror SQL. DataFrames are still composed of columns called **Series**, however, unlike Pandas DataFrames, Polars DataFrames don't have a **row index** (so no need to `.reset_index()`).
-
-Additionally, instead of relying on Pandas' `.loc[]` **property**, Polars includes function-like **expressions** like `pl.col('column_name')`.
-
-::: {.panel-tabset .scrollable}
-## Polars
-
-```{python}
-customer_data.filter(pl.col('college_degree') == 'Yes')
-customer_data.filter(pl.col('region') != 'West')
-customer_data.filter(pl.col('gender') != 'Female', pl.col('income') > 70000)
-```
-
-## Pandas
-
-```{python}
-customer_data_pd.loc[customer_data_pd['college_degree'] == 'Yes']
-customer_data_pd.loc[customer_data_pd['region'] != 'West']
-customer_data_pd.loc[(customer_data_pd['gender'] != 'Female') & (customer_data_pd['income'] > 70000)]
-```
-
-## R
-
-```{r}
-filter(customer_data, college_degree == "Yes")
-filter(customer_data, region != "West")
-filter(customer_data, gender == "Female", income > 70000)
-```
+::: {.fragment}
+You should be creative, but remember this is about communicating a clear story: A visualization is effective only if it is easy to understand and **self-contained**
 :::
 
-## Slice Observations
+## Counts and bar/column plots
 
-The parameters for Polars' `.slice()` method are the start index and the length.
-
-We similarly don't need to rely on Pandas' `.iloc[]` property.
-
-::: {.panel-tabset .scrollable}
-## Polars
-
-```{python}
-customer_data.slice(0, 5)
-```
-
-## Pandas
-
-```{python}
-customer_data_pd.iloc[0:5]
-```
-
-## R
-
-```{r}
-slice(customer_data, 1:5)
-```
+::: {.column width="50%"}
+![](../figures/plot_bar.png)
 :::
 
-## Sort Observations
-
-To reiterate, instead of using `[ ]` like in Pandas, in Polars we rely on expressions like `pl.col()`.
-
-::: {.panel-tabset .scrollable}
-## Polars
-
-```{python}
-customer_data.sort(pl.col('birth_year'))
-customer_data.sort(pl.col('birth_year'), descending = True)
-```
-
-## Pandas
-
-```{python}
-customer_data_pd.sort_values('birth_year')
-customer_data_pd.sort_values('birth_year', ascending = False)
-```
-
-## R
-
-```{r}
-arrange(customer_data, birth_year)
-arrange(customer_data, desc(birth_year))
-```
+::: {.column width="50%"}
+- Visualize discrete variables
+- Remove duplicates
+- Use `COUNTIF()` to create counts
+- Insert a bar/column plot
 :::
 
-## Select Variables
+## Histograms
 
-Polars separates out `.filter()` and `.select()` that are combined in Pandas' `.loc[]`.
-
-::: {.panel-tabset .scrollable}
-## Polars
-
-```{python}
-customer_data.select(pl.col('region'), pl.col('review_text'))
-customer_data.select(pl.col(['region', 'review_text']))
-```
-
-## Pandas
-
-```{python}
-customer_data_pd.loc[:, ['region', 'review_text']]
-```
-
-## R
-
-```{r}
-select(customer_data, region, review_text)
-```
+::: {.column width="50%"}
+![](../figures/plot_histogram.png)
 :::
 
-## Add Variables
-
-Polars is actually a query language, like SQL. So it's not surprising to see methods with names that more closely mirror queries, like the `.with_columns()` method.
-
-::: {.panel-tabset .scrollable}
-## Polars
-
-```{python}
-customer_data.with_columns(income_new = pl.col('income') / 1000)
-```
-
-## Pandas
-
-```{python}
-customer_data_pd.assign(income_new = customer_data_pd['income'] / 1000)
-```
-
-## R
-
-```{r}
-mutate(customer_data, income = income / 1000)
-```
+::: {.column width="50%"}
+- Visualize continuous variables
+- Insert a histogram
+- Modify "Format Data Series"
 :::
 
-## Join Data Frames
+## Line plots
 
-Joins are straightforward.
-
-::: {.panel-tabset .scrollable}
-## Polars
-
-```{python}
-store_transactions = pl.read_csv(os.path.join('data', 'store_transactions.csv'))
-store_transactions
-
-customer_data.join(store_transactions, on = 'customer_id', how = 'left')
-```
-
-## Pandas
-
-```{python}
-store_transactions_pd = pd.read_csv(os.path.join('data', 'store_transactions.csv'))
-store_transactions_pd
-
-customer_data_pd.set_index('customer_id').join(store_transactions_pd.set_index('customer_id'))
-```
-
-## R
-
-```{r}
-store_transactions <- read_csv(here::here("data", "store_transactions.csv"))
-store_transactions
-
-left_join(customer_data, store_transactions, join_by(customer_id))
-```
+::: {.column width="50%"}
+![](../figures/plot_line.png)
 :::
 
-## Consecutive Lines of Code
-
-While possible with Python code generally, Polars especially embraces writing consecutive lines of code using **method chaining**. Note that:
-
-- The entire chain needs to be surrounded with `( )`
-- Each line *starts* with `.`
-- You run the whole block of code at once
-- You can read it like a sentence
-
-::: {.panel-tabset .scrollable}
-## Polars
-
-```{python}
-(customer_data
-  .join(store_transactions, on='customer_id', how='left')
-  .filter(pl.col('region') == 'West', pl.col('feb_2005') == pl.col('feb_2005').max())
-  .with_columns(age = 2024 - pl.col('birth_year'))
-  .select(pl.col(['age', 'feb_2005']))
-  .sort(pl.col('age'), descending=True)
-  .slice(0, 1)
-)
-```
-
-## Pandas
-
-```{python}
-crm_data_pd = (customer_data_pd
-  .set_index('customer_id')
-  .join(store_transactions_pd.set_index('customer_id'))
-)
-
-(crm_data_pd
-  .loc[(crm_data_pd['region'] == 'West') & (crm_data_pd['feb_2005'] == crm_data_pd['feb_2005'].max())]
-  .assign(age = 2024 - crm_data_pd['birth_year'])
-  .loc[:, ['age', 'feb_2005']]
-  .sort_values('age', ascending = False)
-  .iloc[0:1]
-)
-```
-
-## R
-
-```{r}
-customer_data |> 
-  left_join(store_transactions, join_by(customer_id)) |> 
-  filter(region == "West", feb_2005 == max(feb_2005)) |> 
-  mutate(age = 2024 - birth_year) |> 
-  select(age, feb_2005) |> 
-  arrange(desc(age)) |> 
-  slice(1)
-```
+::: {.column width="50%"}
+- Visualize trends over time
+- Insert a line plot
 :::
 
-## Summarize Discrete Data
+## Clustered bar/column plots
 
-::: {.panel-tabset .scrollable}
-## Polars
-
-```{python}
-(customer_data
-  .group_by(pl.col('region'))
-  .agg(n = pl.len())
-)
-
-(customer_data
-  .group_by(pl.col(['region', 'college_degree']))
-  .agg(n = pl.len())
-)
-```
-
-## Pandas
-
-```{python}
-(customer_data_pd
-  .value_counts('region')
-)
-
-(customer_data_pd
-  .value_counts(['region', 'college_degree'])
-)
-```
-
-## R
-
-```{r}
-customer_data |> 
-  count(region)
-
-customer_data |> 
-  count(region, college_degree)
-```
+::: {.column width="50%"}
+![](../figures/plot_bar-clustered.png)
 :::
 
-## Summarize Continuous Data
-
-::: {.panel-tabset .scrollable}
-## Polars
-
-```{python}
-(customer_data
-  .select(pl.col('income'))
-  .mean()
-)
-
-(customer_data
-  .select(pl.col(['income', 'credit']))
-  .mean()
-)
-```
-
-## Pandas
-
-```{python}
-(customer_data_pd
-  .loc[:, ['income']]
-  .mean()
-)
-
-(customer_data_pd
-  .loc[:, ['income', 'credit']]
-  .mean()
-)
-```
-
-## R
-
-```{r}
-customer_data |>
-  summarize(avg_income = mean(income))
-
-customer_data |>
-  summarize(
-    avg_income = mean(income),
-    avg_credit = mean(credit)
-  )
-```
+::: {.column width="50%"}
+- Visualize the relationship between discrete variables
+- Use `IF()` to create new variables as needed
+- Use `COUNTIFS()` to create counts with multiple conditions
+- Insert a clustered bar/column plot
 :::
 
-## Summarize Discrete and Continuous Data
+## Scatterplots
 
-::: {.panel-tabset .scrollable}
-## Polars
-
-```{python}
-(customer_data
-  .group_by(pl.col(['gender', 'region']))
-  .agg(
-    avg_income = pl.col('income').mean(), 
-    avg_credit = pl.col('credit').mean()
-  )
-  .sort(pl.col('avg_income'), descending = True)
-)
-```
-
-## Pandas
-
-```{python}
-(customer_data_pd
- .groupby(['gender', 'region'])
- .agg(
-   avg_income = ('income', 'mean'), 
-   avg_credit = ('credit', 'mean')
-  )
- .sort_values('avg_income', ascending = False)
-)
-```
-
-## R
-
-```{r}
-customer_data |>
-  group_by(gender, region) |>
-  summarize(
-    avg_income = mean(income),
-    avg_credit = mean(credit)
-  ) |> 
-  arrange(desc(avg_income))
-```
+::: {.column width="50%"}
+![](../figures/plot_scatterplot.png)
 :::
 
-## Lazy Evaluation
+::: {.column width="50%"}
+- Visualize the relationship between continuous variables
+- Insert a scatter plot
+- Add a trendline
+:::
 
-Tag a data frame with `.lazy()` to have Polars optimize the query
+## Boxplots
 
-- Code is only run when we use `.collect()`
-- Look at the underlying optimized OLAP query using `.explain()`
+::: {.column width="50%"}
+![](../figures/plot_boxplot.png)
+:::
 
-```{python}
-df = (customer_data
-  .group_by(pl.col(['gender', 'region']))
-  .agg(
-    avg_income = pl.col('income').mean(), 
-    avg_credit = pl.col('credit').mean()
-  )
-  .sort(pl.col('avg_income'), descending = True)
-).lazy()
+::: {.column width="50%"}
+- Visualize the relationship between discrete and continuous variables
+- Insert a box plot
+:::
 
-df.collect()
+# Work on visualizing data for the case competition. What patterns do you uncover? What do they suggest? {background-color="#006242"}
 
-df.explain()
-```
+# Modeling Data {background-color="#288DC2"}
 
-## Resources
+## Extracting information from data
 
-- [Lazy API](https://docs.pola.rs/user-guide/concepts/lazy-api/)
-- [Modern Polars](https://kevinheavey.github.io/modern-polars/)
-- [Polars for Data Analysis in Python](https://www.youtube.com/watch?v=5V_MvnwTVwc)
-- [Understanding Expressions when you're used to pandas](https://www.youtube.com/watch?v=kPtUPe5Egak)
-- [Polars’ Rgonomic Patterns](https://emilyriederer.netlify.app/post/py-rgo-polars/)
+We use models to **extract information** from data
 
-# Thank you! {background-color="#288DC2"}
+## Extracting information from data {visibility="uncounted"}
 
-[marc.dotson@usu.edu](mailto:marc.dotson@usu.edu)  
-[github.com/marcdotson](https://github.com/marcdotson)  
-[occasionaldivergences.com](https://occasionaldivergences.com)
+We use models to **extract information** from data
+
+![](../figures/models_predictive.png){fig-align="center"}
+
+## Extracting information from data {visibility="uncounted"}
+
+We use models to **extract information** from data
+
+![](../figures/models_interpretable.png){fig-align="center"}
+
+## Extracting information from data {visibility="uncounted"}
+
+We use models to **extract information** from data
+
+![](../figures/models_causal.png){fig-align="center"}
+
+## Extracting information from data {visibility="uncounted"}
+
+We use models to **extract information** from data
+
+![](../figures/models_all.png){fig-align="center"}
+
+## Linear regression
+
+One of the most commonly used models is **linear regression**
+
+$$
+\large{y \sim \text{Normal}(\mu, \sigma^2)} \\
+\large{\mu = \beta_0 + \beta_1 x_{1} + \cdots + \beta_p x_{p}}
+$$
+
+::: {.incremental}
+- $y$ is a **continuous outcome** variable and $x_1 \cdots x_p$ are the **predictor** variables
+- $\beta_0$ is the **intercept**, the average of $y$ when $x_1 \cdots x_p = 0$
+- $\beta_1$ through $\beta_p$ are the **slopes**, the average change in $y$ for every one unit increase in $x_1$ through $x_p$, respectively, **holding all other predictors constant**
+:::
+
+## Logistic regression
+
+One of the most commonly used classification models is **logistic regression**
+
+$$
+\large{y \sim \text{Bernoulli}(p)} \\
+\large{\log\left({p \over 1 - p}\right) = \beta_0 + \beta_1 x_{1} + \cdots + \beta_p x_{p}}
+$$
+
+::: {.incremental}
+- $y$ is a **binary outcome** variable and $x_1 \cdots x_p$ are the **predictor** variables
+- $\beta_0$ is the **intercept**, the log-odds of $y$ when $x_1 \cdots x_p = 0$
+- $\beta_1$ through $\beta_p$ are the **slopes**, the average change in the log-odds of $y = 1$ for every one unit increase in $x_1$ through $x_p$, respectively, **holding all other predictors constant**
+:::
+
+# Try modeling your data. What do you uncover? What recommendations does it inform? {background-color="#006242"}
 
 ## 
 
 :::: {.columns .v-center}
 
-::: {.column width="40%"}
-![](../figures/pydata.png){fig-align="center" width="80%"}
+::: {.column width="50%"}
+![](../figures/logo_pydata.png){fig-align="center" width="80%"}
 :::
 
-::: {.column width="60%"}
+::: {.column width="50%"}
 ::: {.incremental}
 - Club and professional forum to learn/retool
 - Global network of chapters
 - Workshops vary from beginning to advanced
 - Polyglot (Python, Julia, R, etc.)
-- We follow the [PyData Code of Conduct](https://pydata.org/code-of-conduct/)
-- Join at [meetup.com/pydata-northern-utah](https://www.meetup.com/pydata-northern-utah/)
 :::
 :::
 
 ::::
+
+## 
+
+:::: {.columns .v-center}
+
+::: {.column width="50%"}
+![](../figures/logo_pydata.png){fig-align="center" width="80%"}
+:::
+
+::: {.column width="50%"}
+![](../figures/qr-code_pydata.png){fig-align="center" width="80%"}
+:::
+
+::::
+
+## 
+
+:::::: {.columns .v-center}
+::: {.column width="50%"}
+![](../figures/logo_marketing-analytics.png){fig-align="center" width="80%"}
+:::
+
+:::: {.column width="50%"}
+::: {.incremental}
+- Club for anyone interested in the intersection of marketing and data analytics
+- Focus on education, engagement, and employer opportunities
+- Meetings once a month
+- Join the DAISSA Teams channel
+:::
+::::
+::::::
+
+## 
+
+:::::: {.columns .v-center}
+::: {.column width="50%"}
+![](../figures/logo_marketing-analytics.png){fig-align="center" width="80%"}
+:::
+
+:::: {.column width="50%"}
+![](../figures/qr-code_marketing-analytics.png){fig-align="center" width="80%"}
+::::
+::::::
 
